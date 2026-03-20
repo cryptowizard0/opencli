@@ -1,13 +1,13 @@
----
-description: Read 20 tweets from the user's X/Twitter home timeline, pick the best 3 reply opportunities, draft concise replies, and post them through opencli.
+description: Read 50 tweets from the user's X/Twitter home timeline, pick the best 3 engagement opportunities, like them, draft concise replies, and post those replies through opencli.
 ---
 
 # OpenCLI Twitter Reply Top 3
 
 Use this workflow when the user wants to:
 
-- read the latest 20 tweets from their home timeline
+- read the latest 50 tweets from their home timeline
 - identify the 3 best tweets to engage with
+- like those 3 tweets
 - reply to those 3 tweets
 
 ## Preconditions
@@ -26,10 +26,10 @@ If browser connectivity fails, stop and fix setup first.
 
 ## Steps
 
-1. Fetch 20 timeline tweets:
+1. Fetch 50 timeline tweets:
 
 ```bash
-opencli twitter timeline --limit 20 -f json
+opencli twitter timeline --limit 50 -f json
 ```
 
 2. Review the results and rank tweets by reply value. Prefer tweets that are:
@@ -43,21 +43,29 @@ opencli twitter timeline --limit 20 -f json
    - highly sensitive political, legal, medical, or personal topics unless the user explicitly wants that
    - tweets where a reply would likely look generic or low-value
 
-4. Select the top 3 tweets and draft one reply for each. Replies should usually be:
+4. Select the top 3 tweets.
+
+5. Like each selected tweet:
+
+```bash
+opencli twitter like --url "<tweet-url>"
+```
+
+6. Draft one reply for each selected tweet. Replies should usually be:
    - short
    - specific to the tweet
    - additive rather than generic praise
    - safe to post publicly
 
-5. Unless the user explicitly asked for fully automatic posting, present the 3 selected tweets and the 3 drafted replies for confirmation before posting.
+7. Unless the user explicitly asked for fully automatic posting, present the 3 selected tweets and the 3 drafted replies for confirmation before posting.
 
-6. Post replies one by one:
+8. Post replies one by one:
 
 ```bash
 opencli twitter reply --url "<tweet-url>" --text "<reply-text>"
 ```
 
-7. Summarize which 3 tweets were chosen, what replies were sent, and note any failures.
+9. Summarize which 3 tweets were chosen, which likes were sent, what replies were sent, and note any failures.
 
 ## Selection rubric
 
@@ -70,6 +78,6 @@ When several tweets are candidates, prefer this order:
 
 ## Important notes
 
-- `timeline` is relatively reliable; `reply` is UI automation and can break if X changes its DOM.
+- `timeline` is relatively reliable; `like` and `reply` are UI automation and can break if X changes its DOM.
 - A reported success from `reply` is useful but not perfect. For important outreach, recommend a manual spot-check in X after posting.
-- If all 20 tweets are poor candidates, do not force replies. Explain why and ask whether to draft replies anyway.
+- If all 50 tweets are poor candidates, do not force likes or replies. Explain why and ask whether to draft replies anyway.

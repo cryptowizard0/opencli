@@ -73,6 +73,15 @@ When the user asks to interact with Twitter/X:
 4. For posting:
    Confirm the requested text if it has non-obvious consequences, then run `post`.
 
+## Reply language rule
+
+When drafting replies or quote commentary:
+
+- If the original tweet is primarily in English, reply in English.
+- If the original tweet is primarily in Chinese, reply in Chinese.
+- If the tweet is mixed-language, follow the dominant language used in the tweet body.
+- Do not switch languages unless the user explicitly asks for it.
+
 ## Bundled workflow
 
 - Timeline triage and reply:
