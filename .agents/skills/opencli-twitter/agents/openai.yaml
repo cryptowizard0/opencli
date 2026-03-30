@@ -1,4 +1,0 @@
-interface:
-  display_name: "OpenCLI Twitter"
-  short_description: "Read, reply to, and publish X/Twitter posts with opencli"
-  default_prompt: "Use OpenCLI's Twitter/X commands in this repository to read tweets, reply to a tweet, or publish a new post."

@@ -1,10 +1,11 @@
 ---
+name: opencli-twitter-reply-top3-english-only
 description: Read 50 tweets from the user's X/Twitter home timeline, pick the best 3 English-language engagement opportunities, like them, draft concise English replies, and post those replies through opencli.
 ---
 
 # OpenCLI Twitter Reply Top 3 English Only
 
-Use this workflow when the user wants to:
+Use this skill when the user wants to:
 
 - read the latest 50 tweets from their home timeline
 - identify the 3 best English-language tweets to engage with
@@ -15,9 +16,15 @@ Use this workflow when the user wants to:
 
 Before starting:
 
-1. Ensure Chrome is running and logged into `x.com`.
-2. Ensure Browser Bridge is available.
-3. Run:
+1. Confirm `opencli` is available in `PATH`:
+
+```bash
+which opencli
+```
+
+2. Ensure Chrome is running and logged into `x.com`.
+3. Ensure Browser Bridge is available.
+4. Run:
 
 ```bash
 opencli doctor --live

@@ -7,6 +7,14 @@ description: Migrate commands from an external CLI project into OpenCLI adapters
 
 Use this skill when the user wants to import commands from another CLI project into `opencli`.
 
+## Preconditions
+
+Before starting, confirm `opencli` is available in `PATH`:
+
+```bash
+which opencli
+```
+
 ## Steps
 
 1. Clone the source CLI project for analysis:

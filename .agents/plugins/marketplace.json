@@ -8,7 +8,7 @@
       "name": "opencli-workflows",
       "source": {
         "source": "local",
-        "path": "./plugins/opencli-workflows"
+        "path": "./.agents/plugins/opencli-workflows"
       },
       "policy": {
         "installation": "AVAILABLE",
