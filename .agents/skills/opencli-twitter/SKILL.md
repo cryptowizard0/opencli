@@ -86,7 +86,7 @@ When drafting replies or quote commentary:
 
 - Timeline triage and reply:
   See `/Users/webbergao/work/src/opencli/.agents/workflows/opencli-twitter-reply-top3.md`
-  Use this when the user wants to read 20 timeline tweets, choose the best 3 reply opportunities, and post replies.
+  Use this when the user wants to read 50 timeline tweets, choose the best 3 reply opportunities, and post replies.
 
 ## Safety and expectations
 

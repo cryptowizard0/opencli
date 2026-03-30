@@ -1,10 +1,11 @@
 ---
+name: opencli-twitter-reply-top3
 description: Read 50 tweets from the user's X/Twitter home timeline, pick the best 3 engagement opportunities, like them, draft concise replies, and post those replies through opencli.
 ---
 
 # OpenCLI Twitter Reply Top 3
 
-Use this workflow when the user wants to:
+Use this skill when the user wants to:
 
 - read the latest 50 tweets from their home timeline
 - identify the 3 best tweets to engage with

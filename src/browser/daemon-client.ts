@@ -6,6 +6,10 @@
 
 const DAEMON_PORT = parseInt(process.env.OPENCLI_DAEMON_PORT ?? '19825', 10);
 const DAEMON_URL = `http://127.0.0.1:${DAEMON_PORT}`;
+const DAEMON_STATUS_TIMEOUT_MS = parseInt(
+  process.env.OPENCLI_DAEMON_STATUS_TIMEOUT ?? '60000',
+  10,
+);
 
 let _idCounter = 0;
 
@@ -40,7 +44,7 @@ export interface DaemonResult {
 export async function isDaemonRunning(): Promise<boolean> {
   try {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 2000);
+    const timer = setTimeout(() => controller.abort(), DAEMON_STATUS_TIMEOUT_MS);
     const res = await fetch(`${DAEMON_URL}/status`, { signal: controller.signal });
     clearTimeout(timer);
     return res.ok;
@@ -55,7 +59,7 @@ export async function isDaemonRunning(): Promise<boolean> {
 export async function isExtensionConnected(): Promise<boolean> {
   try {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 2000);
+    const timer = setTimeout(() => controller.abort(), DAEMON_STATUS_TIMEOUT_MS);
     const res = await fetch(`${DAEMON_URL}/status`, { signal: controller.signal });
     clearTimeout(timer);
     if (!res.ok) return false;

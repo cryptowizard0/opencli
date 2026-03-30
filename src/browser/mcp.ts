@@ -10,7 +10,10 @@ import type { IPage } from '../types.js';
 import { Page } from './page.js';
 import { isDaemonRunning, isExtensionConnected } from './daemon-client.js';
 
-const DAEMON_SPAWN_TIMEOUT = 10000; // 10s to wait for daemon + extension
+const DAEMON_SPAWN_TIMEOUT = parseInt(
+  process.env.OPENCLI_DAEMON_SPAWN_TIMEOUT ?? '60000',
+  10,
+); // Wait longer in sandboxed environments where the bridge can come up slowly.
 
 export type BrowserBridgeState = 'idle' | 'connecting' | 'connected' | 'closing' | 'closed';
 

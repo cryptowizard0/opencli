@@ -1,15 +1,15 @@
 ---
-description: Read 50 tweets from the user's X/Twitter home timeline, pick the best 3 engagement opportunities, like them, draft concise replies, and post those replies through opencli.
+description: Read 50 tweets from the user's X/Twitter home timeline, pick the best 3 English-language engagement opportunities, like them, draft concise English replies, and post those replies through opencli.
 ---
 
-# OpenCLI Twitter Reply Top 3
+# OpenCLI Twitter Reply Top 3 English Only
 
 Use this workflow when the user wants to:
 
 - read the latest 50 tweets from their home timeline
-- identify the 3 best tweets to engage with
+- identify the 3 best English-language tweets to engage with
 - like those 3 tweets
-- reply to those 3 tweets
+- reply to those 3 tweets in English
 
 ## Preconditions
 
@@ -39,18 +39,19 @@ Important:
 opencli twitter timeline --limit 50 -f json
 ```
 
-2. Review the results and rank tweets by reply value. Prefer tweets that are:
+2. Review the results and rank tweets by reply value. Only consider tweets where the main tweet body is primarily in English. Prefer tweets that are:
    - recent and conversational
    - from accounts the user likely wants to engage with
    - likely to benefit from a short, useful, non-spammy reply
    - not obviously sensitive, hostile, or high-risk
 
 3. Exclude tweets that are poor reply targets:
+   - tweets primarily written in Chinese or another non-English language
    - ads, giveaways, ragebait, or engagement farming
    - highly sensitive political, legal, medical, or personal topics unless the user explicitly wants that
    - tweets where a reply would likely look generic or low-value
 
-4. Select the top 3 tweets.
+4. Select the top 3 English-language tweets.
 
 5. Like each selected tweet:
 
@@ -66,6 +67,7 @@ If a like fails:
 - If the command fails with `No tab with given id`, retry the like once in a fresh command/session.
 
 6. Draft one reply for each selected tweet. Replies should usually be:
+   - in English
    - short
    - specific to the tweet
    - additive rather than generic praise
@@ -91,6 +93,7 @@ When several tweets are candidates, prefer this order:
 2. Best chance of a meaningful interaction
 3. Lowest risk of sounding automated
 4. Strongest signal from tweet content plus engagement context
+5. Clear fit for a natural English reply
 
 ## Important notes
 
@@ -99,4 +102,4 @@ When several tweets are candidates, prefer this order:
 - `EADDRINUSE` from `node dist/daemon.js` means the daemon is already bound to port `19825`; that is not the bug.
 - `No tab with given id` usually means the UI session went stale. Retry the affected `like` or `reply` once in a fresh command.
 - A reported success from `reply` is useful but not perfect. For important outreach, recommend a manual spot-check in X after posting.
-- If all 50 tweets are poor candidates, do not force likes or replies. Explain why and ask whether to draft replies anyway.
+- If fewer than 3 English tweets are good candidates, do not force likes or replies. Explain why and stop with the strongest available candidates.

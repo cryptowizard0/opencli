@@ -101,7 +101,8 @@ function parseHomeTimeline(data: any, seen: Set<string>): { tweets: TimelineTwee
     data?.data?.home?.home_timeline_urt?.instructions || [];
 
   for (const inst of instructions) {
-    for (const entry of inst.entries || []) {
+    for (const entry of (inst.entries || [])) {
+      if (!entry) continue;  // skip null entries
       const c = entry.content;
 
       // Cursor entries
