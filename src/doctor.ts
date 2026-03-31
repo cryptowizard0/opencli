@@ -49,11 +49,14 @@ export async function checkConnectivity(opts?: { timeout?: number }): Promise<Co
 }
 
 export async function runBrowserDoctor(opts: DoctorOptions = {}): Promise<DoctorReport> {
-  const status = await checkDaemonStatus();
+  let status = await checkDaemonStatus();
 
   let connectivity: ConnectivityResult | undefined;
   if (opts.live) {
     connectivity = await checkConnectivity();
+    // Live connectivity can auto-start the daemon, so refresh the status
+    // snapshot before rendering the final report.
+    status = await checkDaemonStatus();
   }
 
   const issues: string[] = [];
@@ -115,4 +118,3 @@ export function renderBrowserDoctorReport(report: DoctorReport): string {
 
   return lines.join('\n');
 }
-

@@ -48,7 +48,18 @@ export class Page implements IPage {
 
   async evaluate(js: string): Promise<any> {
     const code = wrapForEval(js);
-    return sendCommand('exec', { code, ...this._tabOpt() });
+    try {
+      return await sendCommand('exec', { code, ...this._tabOpt() });
+    } catch (err) {
+      // The extension can occasionally close/recreate the automation tab,
+      // invalidating our cached tabId. Recover by clearing tabId and retrying once.
+      const msg = err instanceof Error ? err.message : String(err);
+      if (this._tabId !== undefined && /No tab with given id/i.test(msg)) {
+        this._tabId = undefined;
+        return await sendCommand('exec', { code });
+      }
+      throw err;
+    }
   }
 
   async snapshot(opts: { interactive?: boolean; compact?: boolean; maxDepth?: number; raw?: boolean } = {}): Promise<any> {
@@ -80,7 +91,18 @@ export class Page implements IPage {
         return buildTree(document.body, 0);
       })()
     `;
-    const raw = await sendCommand('exec', { code, ...this._tabOpt() });
+    let raw: any;
+    try {
+      raw = await sendCommand('exec', { code, ...this._tabOpt() });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (this._tabId !== undefined && /No tab with given id/i.test(msg)) {
+        this._tabId = undefined;
+        raw = await sendCommand('exec', { code });
+      } else {
+        throw err;
+      }
+    }
     if (opts.raw) return raw;
     if (typeof raw === 'string') return formatSnapshot(raw, opts);
     return raw;
@@ -99,7 +121,17 @@ export class Page implements IPage {
         return 'clicked';
       })()
     `;
-    await sendCommand('exec', { code, ...this._tabOpt() });
+    try {
+      await sendCommand('exec', { code, ...this._tabOpt() });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (this._tabId !== undefined && /No tab with given id/i.test(msg)) {
+        this._tabId = undefined;
+        await sendCommand('exec', { code });
+        return;
+      }
+      throw err;
+    }
   }
 
   async typeText(ref: string, text: string): Promise<void> {
@@ -118,7 +150,17 @@ export class Page implements IPage {
         return 'typed';
       })()
     `;
-    await sendCommand('exec', { code, ...this._tabOpt() });
+    try {
+      await sendCommand('exec', { code, ...this._tabOpt() });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (this._tabId !== undefined && /No tab with given id/i.test(msg)) {
+        this._tabId = undefined;
+        await sendCommand('exec', { code });
+        return;
+      }
+      throw err;
+    }
   }
 
   async pressKey(key: string): Promise<void> {
@@ -130,7 +172,17 @@ export class Page implements IPage {
         return 'pressed';
       })()
     `;
-    await sendCommand('exec', { code, ...this._tabOpt() });
+    try {
+      await sendCommand('exec', { code, ...this._tabOpt() });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (this._tabId !== undefined && /No tab with given id/i.test(msg)) {
+        this._tabId = undefined;
+        await sendCommand('exec', { code });
+        return;
+      }
+      throw err;
+    }
   }
 
   async wait(options: number | { text?: string; time?: number; timeout?: number }): Promise<void> {
@@ -155,7 +207,17 @@ export class Page implements IPage {
           check();
         })
       `;
-      await sendCommand('exec', { code, ...this._tabOpt() });
+      try {
+        await sendCommand('exec', { code, ...this._tabOpt() });
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        if (this._tabId !== undefined && /No tab with given id/i.test(msg)) {
+          this._tabId = undefined;
+          await sendCommand('exec', { code });
+          return;
+        }
+        throw err;
+      }
     }
   }
 
@@ -164,15 +226,25 @@ export class Page implements IPage {
   }
 
   async closeTab(index?: number): Promise<void> {
+    const closingCurrent = index === undefined;
     await sendCommand('tabs', { op: 'close', ...(index !== undefined ? { index } : {}) });
+    if (closingCurrent) {
+      this._tabId = undefined;
+    }
   }
 
   async newTab(): Promise<void> {
-    await sendCommand('tabs', { op: 'new' });
+    const result = await sendCommand('tabs', { op: 'new' }) as { tabId?: number };
+    if (result?.tabId) {
+      this._tabId = result.tabId;
+    }
   }
 
   async selectTab(index: number): Promise<void> {
-    await sendCommand('tabs', { op: 'select', index });
+    const result = await sendCommand('tabs', { op: 'select', index }) as { selected?: number };
+    if (result?.selected) {
+      this._tabId = result.selected;
+    }
   }
 
   async networkRequests(includeStatic: boolean = false): Promise<any> {
@@ -189,7 +261,16 @@ export class Page implements IPage {
           }));
       })()
     `;
-    return sendCommand('exec', { code, ...this._tabOpt() });
+    try {
+      return await sendCommand('exec', { code, ...this._tabOpt() });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (this._tabId !== undefined && /No tab with given id/i.test(msg)) {
+        this._tabId = undefined;
+        return await sendCommand('exec', { code });
+      }
+      throw err;
+    }
   }
 
   /**
@@ -214,12 +295,27 @@ export class Page implements IPage {
     fullPage?: boolean;
     path?: string;
   } = {}): Promise<string> {
-    const base64 = await sendCommand('screenshot', {
-      format: options.format,
-      quality: options.quality,
-      fullPage: options.fullPage,
-      ...this._tabOpt(),
-    }) as string;
+    let base64: string;
+    try {
+      base64 = await sendCommand('screenshot', {
+        format: options.format,
+        quality: options.quality,
+        fullPage: options.fullPage,
+        ...this._tabOpt(),
+      }) as string;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (this._tabId !== undefined && /No tab with given id/i.test(msg)) {
+        this._tabId = undefined;
+        base64 = await sendCommand('screenshot', {
+          format: options.format,
+          quality: options.quality,
+          fullPage: options.fullPage,
+        }) as string;
+      } else {
+        throw err;
+      }
+    }
 
     if (options.path) {
       const fs = await import('node:fs');
@@ -235,10 +331,18 @@ export class Page implements IPage {
   async scroll(direction: string = 'down', amount: number = 500): Promise<void> {
     const dx = direction === 'left' ? -amount : direction === 'right' ? amount : 0;
     const dy = direction === 'up' ? -amount : direction === 'down' ? amount : 0;
-    await sendCommand('exec', {
-      code: `window.scrollBy(${dx}, ${dy})`,
-      ...this._tabOpt(),
-    });
+    const payload = { code: `window.scrollBy(${dx}, ${dy})`, ...this._tabOpt() } as any;
+    try {
+      await sendCommand('exec', payload);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (this._tabId !== undefined && /No tab with given id/i.test(msg)) {
+        this._tabId = undefined;
+        await sendCommand('exec', { code: `window.scrollBy(${dx}, ${dy})` });
+        return;
+      }
+      throw err;
+    }
   }
 
   async autoScroll(options: { times?: number; delayMs?: number } = {}): Promise<void> {
@@ -264,7 +368,17 @@ export class Page implements IPage {
         }
       })()
     `;
-    await sendCommand('exec', { code, ...this._tabOpt() });
+    try {
+      await sendCommand('exec', { code, ...this._tabOpt() });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (this._tabId !== undefined && /No tab with given id/i.test(msg)) {
+        this._tabId = undefined;
+        await sendCommand('exec', { code });
+        return;
+      }
+      throw err;
+    }
   }
 
   async installInterceptor(pattern: string): Promise<void> {

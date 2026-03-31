@@ -36,6 +36,9 @@ interface ManifestEntry {
   }>;
   columns?: string[];
   pipeline?: any[];
+  /** Command timeout in seconds (used by main.ts runWithTimeout) */
+  timeoutSeconds?: number;
+  /** Back-compat for YAML definitions that used `timeout` */
   timeout?: number;
   /** 'yaml' or 'ts' — determines how executeCommand loads the handler */
   type: 'yaml' | 'ts';
@@ -188,6 +191,7 @@ function scanYaml(filePath: string, site: string): ManifestEntry | null {
       columns: def.columns,
       pipeline: def.pipeline,
       timeout: def.timeout,
+      timeoutSeconds: typeof def.timeout === 'number' ? def.timeout : undefined,
       type: 'yaml',
     };
   } catch (err: any) {
@@ -236,6 +240,12 @@ function scanTs(filePath: string, site: string): ManifestEntry {
     const colMatch = src.match(/columns\s*:\s*\[([^\]]*)\]/);
     if (colMatch) {
       entry.columns = colMatch[1].split(',').map(s => s.trim().replace(/^['"`]|['"`]$/g, '')).filter(Boolean);
+    }
+
+    // Extract timeoutSeconds
+    const timeoutMatch = src.match(/timeoutSeconds\s*:\s*(\d+)/);
+    if (timeoutMatch) {
+      entry.timeoutSeconds = parseInt(timeoutMatch[1], 10);
     }
 
     // Extract args array items: { name: '...', ... }
