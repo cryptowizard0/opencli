@@ -114,6 +114,7 @@ Use the returned `text` field as the source tweet text.
    - add analysis, not paraphrase
    - keep one clear point
    - stay short enough to leave room for the quoted tweet, preferably 220 characters or fewer
+   - match the source tweet language: Chinese source tweets get Chinese commentary; English source tweets get English commentary
    - use plain ASCII punctuation
    - avoid hashtags, emojis, filler, and generic praise unless the user explicitly asks for them
 
@@ -156,6 +157,12 @@ This will matter because <implication>.
 ```
 
 Keep the quote-specific commentary tied to the source tweet. Do not sound like a generic motivational post. If all 3 selected tweets are weak quote targets, say so instead of forcing a quote.
+
+For language choice:
+
+- If the source tweet is primarily Chinese, write the quote-style commentary in Chinese.
+- If the source tweet is primarily English, write the quote-style commentary in English.
+- Do not mix languages unless the source tweet itself is meaningfully bilingual and the mixed style is clearly intentional.
 
 10. Unless the user explicitly asked for fully automatic posting, present:
    - the 3 selected tweets
