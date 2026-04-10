@@ -1,0 +1,3 @@
+[submodule ".agents/plugins/tweetflow"]
+	path = .agents/plugins/tweetflow
+	url = git@github.com:cryptowizard0/TweetFlow.git
