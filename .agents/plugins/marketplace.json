@@ -5,10 +5,10 @@
   },
   "plugins": [
     {
-      "name": "opencli-workflows",
+      "name": "tweetflow",
       "source": {
         "source": "local",
-        "path": "./.agents/plugins/opencli-workflows"
+        "path": "./.agents/plugins/tweetflow"
       },
       "policy": {
         "installation": "AVAILABLE",

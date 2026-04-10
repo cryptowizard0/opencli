@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WRAPPER="${SCRIPT_DIR}/tweetflow-opencli"
+BRIDGE_EXTENSION_URL="https://github.com/jackwener/opencli/releases"
+
+print_header() {
+  printf '%s\n' "TweetFlow setup"
+  printf '%s\n' ""
+}
+
+print_status() {
+  local code="$1"
+  local status="$2"
+  printf '%s\n' "STATUS: ${status}"
+  exit "${code}"
+}
+
+strip_ansi() {
+  sed -E $'s/\x1B\\[[0-9;]*[mK]//g'
+}
+
+print_header
+printf '%s\n' "Checking opencli runtime..."
+if ! OPENCLI_BIN="$("${WRAPPER}" --tweetflow-which 2>&1)"; then
+  printf '%s\n' "${OPENCLI_BIN}" >&2
+  print_status 1 "needs opencli runtime"
+fi
+printf '%s\n' "Using opencli: ${OPENCLI_BIN}"
+printf '%s\n' ""
+
+printf '%s\n' "Running opencli doctor --live..."
+DOCTOR_OUTPUT="$("${WRAPPER}" doctor --live 2>&1 || true)"
+printf '%s\n' "${DOCTOR_OUTPUT}"
+printf '%s\n' ""
+
+DOCTOR_PLAIN="$(printf '%s\n' "${DOCTOR_OUTPUT}" | strip_ansi)"
+
+if ! printf '%s\n' "${DOCTOR_PLAIN}" | grep -Fq "[OK] Extension: connected"; then
+  printf '%s\n' "TweetFlow still needs the Browser Bridge."
+  printf '%s\n' "1. Download the extension from ${BRIDGE_EXTENSION_URL}"
+  printf '%s\n' "2. Open chrome://extensions/ and enable Developer Mode"
+  printf '%s\n' "3. Load the unpacked extension folder"
+  printf '%s\n' "4. Keep Chrome running, then rerun tweetflow-setup"
+  print_status 2 "needs browser bridge"
+fi
+
+if ! printf '%s\n' "${DOCTOR_PLAIN}" | grep -Fq "[OK] Connectivity:"; then
+  printf '%s\n' "Browser connectivity is not healthy yet."
+  printf '%s\n' "Make sure Chrome is running with the Browser Bridge loaded, then rerun tweetflow-setup."
+  print_status 2 "needs browser bridge"
+fi
+
+printf '%s\n' "Checking x.com login state..."
+if ! TIMELINE_OUTPUT="$("${WRAPPER}" twitter timeline --limit 1 -f json 2>&1)"; then
+  printf '%s\n' "${TIMELINE_OUTPUT}" >&2
+  printf '%s\n' "TweetFlow can reach the browser, but the Twitter/X session is not ready."
+  printf '%s\n' "Open x.com in Chrome, sign in, then rerun tweetflow-setup."
+  print_status 3 "needs login"
+fi
+
+printf '%s\n' "Timeline check succeeded."
+print_status 0 "ready"

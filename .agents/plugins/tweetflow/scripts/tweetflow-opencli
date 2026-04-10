@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PACKAGE_NAME="@jackwener/opencli"
+DEFAULT_OPENCLI_HOME="${HOME}/.tweetflow/vendor/opencli"
+OPENCLI_HOME="${TWEETFLOW_OPENCLI_HOME:-${DEFAULT_OPENCLI_HOME}}"
+PRIVATE_OPENCLI_BIN="${OPENCLI_HOME}/node_modules/.bin/opencli"
+
+log() {
+  printf '%s\n' "[tweetflow-opencli] $*" >&2
+}
+
+fail() {
+  log "$*"
+  exit 1
+}
+
+have_cmd() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+install_private_opencli() {
+  if ! have_cmd node; then
+    fail "node is required to auto-install opencli. Install Node.js first, then rerun TweetFlow."
+  fi
+  if ! have_cmd npm; then
+    fail "npm is required to auto-install opencli. Install npm first, then rerun TweetFlow."
+  fi
+
+  mkdir -p "${OPENCLI_HOME}"
+  log "Installing ${PACKAGE_NAME} into ${OPENCLI_HOME}"
+  if ! npm install --prefix "${OPENCLI_HOME}" --no-audit --no-fund "${PACKAGE_NAME}"; then
+    fail "Failed to install ${PACKAGE_NAME}. Manual fix: npm install --prefix \"${OPENCLI_HOME}\" ${PACKAGE_NAME}"
+  fi
+
+  if [[ ! -x "${PRIVATE_OPENCLI_BIN}" ]]; then
+    fail "Installed ${PACKAGE_NAME} but did not find an executable at ${PRIVATE_OPENCLI_BIN}"
+  fi
+}
+
+resolve_opencli_bin() {
+  if [[ -n "${TWEETFLOW_OPENCLI_BIN:-}" ]]; then
+    if [[ -x "${TWEETFLOW_OPENCLI_BIN}" ]]; then
+      printf '%s\n' "${TWEETFLOW_OPENCLI_BIN}"
+      return 0
+    fi
+    fail "TWEETFLOW_OPENCLI_BIN is set but not executable: ${TWEETFLOW_OPENCLI_BIN}"
+  fi
+
+  if have_cmd opencli; then
+    command -v opencli
+    return 0
+  fi
+
+  if [[ -x "${PRIVATE_OPENCLI_BIN}" ]]; then
+    printf '%s\n' "${PRIVATE_OPENCLI_BIN}"
+    return 0
+  fi
+
+  install_private_opencli
+  printf '%s\n' "${PRIVATE_OPENCLI_BIN}"
+}
+
+if [[ "${1:-}" == "--tweetflow-which" ]]; then
+  resolve_opencli_bin
+  exit 0
+fi
+
+OPENCLI_BIN="$(resolve_opencli_bin)"
+exec "${OPENCLI_BIN}" "$@"

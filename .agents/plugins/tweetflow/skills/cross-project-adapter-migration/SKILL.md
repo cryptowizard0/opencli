@@ -7,12 +7,18 @@ description: Migrate commands from an external CLI project into OpenCLI adapters
 
 Use this skill when the user wants to import commands from another CLI project into `opencli`.
 
-## Preconditions
-
-Before starting, confirm `opencli` is available in `PATH`:
+Use the TweetFlow wrapper for every `opencli` command in this skill:
 
 ```bash
-which opencli
+../../scripts/tweetflow-opencli
+```
+
+## Preconditions
+
+Before starting, confirm the TweetFlow runtime is available:
+
+```bash
+../../scripts/tweetflow-opencli --version
 ```
 
 ## Steps
@@ -33,7 +39,7 @@ git clone <source_repo_url> /tmp/<source-cli>
 
 ```bash
 ls src/clis/<site>/
-opencli list | grep <site>
+../../scripts/tweetflow-opencli list | grep <site>
 ```
 
 4. Generate a comparison matrix table (`source commands` vs `opencli existing`) and mark each command as:
@@ -70,13 +76,13 @@ npx tsc --noEmit
 9. Verify commands are registered:
 
 ```bash
-opencli list | grep <site>
+../../scripts/tweetflow-opencli list | grep <site>
 ```
 
 10. Run each new command to verify it works:
 
 ```bash
-opencli <site> <command> --limit 3 -f json
+../../scripts/tweetflow-opencli <site> <command> --limit 3 -f json
 ```
 
 11. Update `README.md` with new command examples in the correct platform section.

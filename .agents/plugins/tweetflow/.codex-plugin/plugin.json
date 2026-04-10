@@ -1,0 +1,29 @@
+{
+  "name": "tweetflow",
+  "version": "0.1.0",
+  "description": "Twitter/X workflow skills that auto-install opencli on first use and guide browser setup when needed.",
+  "author": {
+    "name": "Webber Gao",
+    "url": "https://github.com/cryptowizard0"
+  },
+  "homepage": "https://github.com/cryptowizard0/TweetFlow",
+  "repository": "https://github.com/cryptowizard0/TweetFlow",
+  "license": "MIT",
+  "keywords": ["tweetflow", "twitter", "x", "automation", "opencli"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "TweetFlow",
+    "shortDescription": "Twitter/X workflow skills with automatic opencli runtime setup.",
+    "longDescription": "TweetFlow auto-installs opencli on first use, exposes reusable Twitter/X workflow skills, and guides Browser Bridge plus login setup for browser-backed actions.",
+    "developerName": "Webber Gao",
+    "category": "Developer Tools",
+    "capabilities": ["Interactive", "Write"],
+    "websiteURL": "https://github.com/cryptowizard0/TweetFlow",
+    "defaultPrompt": [
+      "Run TweetFlow setup and tell me what is missing.",
+      "Review 50 timeline tweets and draft the top 3 replies.",
+      "Read a tweet URL, write a short judgment, and post it."
+    ],
+    "brandColor": "#0F766E"
+  }
+}
